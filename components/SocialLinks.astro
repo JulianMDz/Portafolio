@@ -1,0 +1,76 @@
+---
+interface Social {
+	name: string;
+	href: string;
+	path: string;
+}
+
+// TODO: reemplazar "#" por las URLs reales de cada perfil.
+const socials: Social[] = [
+	{
+		name: 'GitHub',
+		href: '#',
+		path: 'M12 .5C5.73.5.98 5.24.98 11.52c0 4.94 3.2 9.13 7.65 10.6.56.1.76-.24.76-.53 0-.26-.01-1.13-.02-2.04-3.11.68-3.77-1.32-3.77-1.32-.51-1.3-1.24-1.65-1.24-1.65-1.01-.7.08-.68.08-.68 1.12.08 1.71 1.15 1.71 1.15 1 1.71 2.62 1.22 3.26.93.1-.72.39-1.22.71-1.5-2.49-.28-5.1-1.25-5.1-5.55 0-1.23.44-2.23 1.15-3.02-.12-.28-.5-1.42.11-2.96 0 0 .95-.3 3.1 1.15a10.7 10.7 0 0 1 5.65 0c2.15-1.45 3.1-1.15 3.1-1.15.61 1.54.23 2.68.11 2.96.72.79 1.15 1.79 1.15 3.02 0 4.31-2.62 5.26-5.12 5.54.4.35.76 1.03.76 2.08 0 1.5-.01 2.7-.01 3.07 0 .29.2.64.77.53A11.02 11.02 0 0 0 23.02 11.5C23.02 5.24 18.27.5 12 .5Z'
+	},
+	{
+		name: 'LinkedIn',
+		href: '#',
+		path: 'M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3zM9 9h3.6v1.7h.05c.5-.95 1.75-1.95 3.6-1.95 3.85 0 4.56 2.53 4.56 5.83V21h-4v-5.4c0-1.3-.02-2.96-1.8-2.96-1.8 0-2.08 1.4-2.08 2.86V21H9z'
+	},
+	{
+		name: 'WhatsApp',
+		href: '#',
+		path: 'M17.5 14.4c-.3-.15-1.7-.85-2-.95-.27-.1-.47-.15-.66.15-.2.3-.76.95-.93 1.15-.17.2-.34.22-.63.07-.3-.15-1.24-.46-2.37-1.47-.87-.78-1.46-1.74-1.63-2.04-.17-.3-.02-.46.13-.6.13-.13.3-.35.44-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.66-1.6-.9-2.18-.24-.58-.48-.5-.66-.5-.17 0-.37-.02-.57-.02-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.87 1.22 3.07c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.09 1.7-.7 1.94-1.37.24-.68.24-1.26.17-1.38-.07-.12-.27-.2-.57-.35ZM12 2C6.5 2 2 6.5 2 12c0 1.9.53 3.68 1.44 5.2L2 22l4.94-1.4A9.96 9.96 0 0 0 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2Zm0 18a8 8 0 0 1-4.08-1.11l-.29-.17-2.93.83.84-2.85-.19-.3A8 8 0 1 1 12 20Z'
+	},
+	{
+		name: 'Sketchfab',
+		href: '#',
+		path: 'M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3 6.5 3.6L12 11.5 5.5 7.9 12 4.3ZM5 9.6l6 3.3v7L5 16.6V9.6Zm8 10.3v-7l6-3.3v7l-6 3.3Z'
+	},
+	{
+		name: 'Gmail',
+		href: '#',
+		path: 'M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v.01L12 13l8-6.99V6H4Zm16 2.24-7.4 6.47a1 1 0 0 1-1.2 0L4 8.24V18h16V8.24Z'
+	}
+];
+---
+
+<ul class="social-links">
+	{socials.map((social) => (
+		<li>
+			<a href={social.href} class="social-links__item" aria-label={social.name} target="_blank" rel="noopener noreferrer">
+				<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+					<path d={social.path} />
+				</svg>
+			</a>
+		</li>
+	))}
+</ul>
+
+<style>
+	.social-links {
+		display: flex;
+		gap: 0.75rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.social-links__item {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.75rem;
+		height: 2.75rem;
+		border-radius: 999px;
+		color: var(--foreground);
+		background: color-mix(in oklch, var(--foreground) 6%, transparent);
+		border: 1px solid color-mix(in oklch, var(--foreground) 12%, transparent);
+		transition: background-color 0.2s ease, transform 0.2s ease;
+	}
+
+	.social-links__item:hover {
+		background: color-mix(in oklch, var(--foreground) 14%, transparent);
+		transform: translateY(-2px);
+	}
+</style>

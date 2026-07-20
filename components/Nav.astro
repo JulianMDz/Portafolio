@@ -1,0 +1,66 @@
+---
+import { ModeToggle } from './ModeToggle';
+---
+
+<nav class="nav">
+	<a href="/" class="nav__logo">MDz</a>
+
+	<div class="nav-links">
+		<a href="#hero">home</a>
+		<a href="#projects">projects</a>
+		<a href="#about">About me</a>
+	</div>
+
+	<div class="nav-actions">
+		<ModeToggle client:load />
+	</div>
+</nav>
+
+<style>
+	nav {
+		position: fixed;
+		width: 100%;
+		/* Sit above the GradualBlur page overlays (zIndex 1100) so the nav
+		   itself stays sharp instead of being blurred along with the content
+		   scrolling underneath it. */
+		z-index: 1200;
+		display: flex;
+		justify-content: space-between;
+		padding: 2rem 3rem;
+	}
+
+	.nav__logo {
+		display: flex;
+		align-items: flex-start;
+		font-family: var(--font-sans);
+		font-size: 1.5rem;
+		color: var(--foreground);
+		text-decoration: none;
+	}
+
+	.nav-links {
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+		padding: 0.6rem 1.5rem;
+		border-radius: 12px;
+		background: color-mix(in oklch, var(--foreground) 6%, transparent);
+		border: 1px solid color-mix(in oklch, var(--foreground) 12%, transparent);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+	}
+
+	.nav-links a {
+		text-decoration: none;
+		color: var(--foreground);
+		font-family: var(--font-sans);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+	}
+
+	.nav-actions {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+</style>

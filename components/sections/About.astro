@@ -1,0 +1,31 @@
+---
+import ScrambledText from '../ScrambledText';
+---
+
+<!-- PANTALLA 5 — SECTION ABOUT ME (dos columnas) -->
+<section id="about" class="section about">
+	<span class="section__tag">&lt;Section About Me&gt;</span>
+
+	<div class="about__grid">
+		<!-- columna izquierda: texto -->
+		<div class="about__text">
+			<!-- TODO: reemplazar por tu bio real -->
+			<ScrambledText client:visible radius={80} duration={1} speed={0.5} scrambleChars=".:">
+				I care about the small details that make an interface feel alive: motion, timing, and the space between elements.
+			</ScrambledText>
+		</div>
+
+		<!-- columna derecha: skills -->
+		<div class="about__skills">
+			<span class="section__tag">&lt;section skills&gt;</span>
+
+			<ul class="skills__list">
+				<li class="skill">Skill Family</li>
+				<li class="skill">Skill Family</li>
+				<li class="skill">Skill Family</li>
+				<li class="skill">Skill Family</li>
+				<li class="skill">Skill Family</li>
+			</ul>
+		</div>
+	</div>
+</section>

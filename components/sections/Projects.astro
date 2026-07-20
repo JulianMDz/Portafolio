@@ -1,0 +1,302 @@
+---
+import TiltedCard from '../TiltedCard';
+
+interface Project {
+	name: string;
+	category: 'DEV' | '3D';
+	image: string;
+}
+
+// TODO: reemplazar por tus proyectos reales (nombre + imagen).
+const projects: Project[] = [
+	{ name: 'Portfolio Website', category: 'DEV', image: 'https://picsum.photos/seed/dev1/600/600' },
+	{ name: 'Task Manager App', category: 'DEV', image: 'https://picsum.photos/seed/dev2/600/600' },
+	{ name: 'Character Model', category: '3D', image: 'https://picsum.photos/seed/3d1/600/600' },
+	{ name: 'API Dashboard', category: 'DEV', image: 'https://picsum.photos/seed/dev3/600/600' },
+	{ name: 'Devil Sword', category: '3D', image: 'https://res.cloudinary.com/iopo4z4k/image/upload/f_auto,q_auto/Sword_morn7g' }
+];
+---
+
+<!-- PANTALLA 4 — SECTION PROJECTS -->
+<section id="projects" class="section projects">
+	<div class="section-tag">
+		<h1>Projects</h1>
+	</div>
+
+	<div class="projects__tabs" role="tablist">
+		<button type="button" class="projects__tab is-active" role="tab" data-category="DEV" aria-selected="true">DEV</button>
+		<button type="button" class="projects__tab" role="tab" data-category="3D" aria-selected="false">3D</button>
+	</div>
+
+	<div class="projects__content">
+		<div class="projects__list-viewport">
+			<ul class="projects__list">
+				{projects.map((project, i) => (
+					<li>
+						<button
+							type="button"
+							class="projects__name"
+							class:list={[{ 'is-active': i === 0 }]}
+							data-index={i}
+							data-category={project.category}
+						>
+							{project.name}
+						</button>
+					</li>
+				))}
+			</ul>
+		</div>
+
+		<div class="projects__cards">
+			{projects.map((project, i) => (
+				<div class="projects__card" class:list={[{ 'is-active': i === 0 }]} data-index={i} data-category={project.category}>
+					<TiltedCard
+						client:visible
+						imageSrc={project.image}
+						altText={project.name}
+						captionText={project.name}
+						containerHeight="320px"
+						containerWidth="320px"
+						imageHeight="320px"
+						imageWidth="320px"
+						rotateAmplitude={22}
+						scaleOnHover={1.05}
+						showMobileWarning={false}
+						showTooltip
+					/>
+				</div>
+			))}
+		</div>
+	</div>
+</section>
+
+<style>
+	.projects {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1.5rem;
+		min-height: 100vh;
+		padding: 4rem 1.5rem;
+	}
+
+	.projects__tabs {
+		display: inline-flex;
+		gap: 0.25rem;
+		padding: 0.35rem;
+		border-radius: 999px;
+		background: color-mix(in oklch, var(--foreground) 4%, transparent);
+		border: 1px solid color-mix(in oklch, var(--foreground) 10%, transparent);
+	}
+
+	.section-tag h1 {
+		margin: 0;
+		font-family: var(--font-sans);
+		font-size: clamp(2rem, 6vw, 6rem);
+		font-weight: bold;
+		text-transform: uppercase;
+		color: var(--foreground);
+	}
+
+	.projects__tab {
+		padding: 0.5rem 1.5rem;
+		border: none;
+		border-radius: 999px;
+		background: transparent;
+		color: var(--foreground);
+		font-family: var(--font-sans);
+		font-size: 0.9rem;
+		letter-spacing: 0.05em;
+		cursor: pointer;
+		opacity: 0.5;
+		transition: background-color 0.2s ease, opacity 0.2s ease;
+	}
+
+	.projects__tab:hover {
+		opacity: 0.8;
+	}
+
+	.projects__tab.is-active {
+		opacity: 1;
+		background: color-mix(in oklch, var(--foreground) 10%, transparent);
+	}
+
+	.projects__content {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: center;
+		gap: 2rem;
+		width: 100%;
+		max-width: 64rem;
+		padding: 2rem;
+		border-radius: 1.5rem;
+		background: color-mix(in oklch, var(--foreground) 3%, transparent);
+	}
+
+	.projects__list-viewport {
+		height: 24rem;
+		overflow: hidden;
+		mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
+		touch-action: none;
+	}
+
+	.projects__list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		will-change: transform;
+	}
+
+	.projects__name {
+		border: none;
+		background: transparent;
+		color: var(--foreground);
+		font-family: var(--font-sans);
+		font-size: clamp(1.1rem, 2vw, 1.5rem);
+		text-align: left;
+		cursor: pointer;
+	}
+
+	.projects__cards {
+		position: relative;
+		width: 320px;
+		height: 320px;
+	}
+
+	.projects__card {
+		display: none;
+	}
+
+	.projects__card.is-active {
+		display: block;
+	}
+</style>
+
+<script>
+	import { gsap } from '../../lib/gsap';
+
+	const tabs = document.querySelectorAll<HTMLButtonElement>('.projects__tab');
+	const cards = document.querySelectorAll<HTMLDivElement>('.projects__card');
+	const viewport = document.querySelector<HTMLDivElement>('.projects__list-viewport');
+	const list = document.querySelector<HTMLUListElement>('.projects__list');
+	const allItems = Array.from(document.querySelectorAll<HTMLLIElement>('.projects__list li'));
+
+	function clamp(value: number, min: number, max: number) {
+		return Math.min(max, Math.max(min, value));
+	}
+
+	if (viewport && list && allItems.length) {
+		// The natural browser wheel/scroll-snap combo let a single wheel tick
+		// (or a fast trackpad flick) jump several projects at once, which felt
+		// abrupt. Instead of native scrolling, the wheel/touch handlers below
+		// only nudge a *virtual* continuous index, and GSAP eases the list
+		// toward it — so every project change is a controlled, damped step.
+		let visibleItems = allItems;
+		const state = { index: 0 };
+		let target = 0;
+
+		function itemCenterOffset(i: number) {
+			const item = visibleItems[i];
+			return item.offsetTop + item.offsetHeight / 2;
+		}
+
+		function render() {
+			if (!visibleItems.length) return;
+
+			const idx = clamp(state.index, 0, visibleItems.length - 1);
+			const lower = Math.floor(idx);
+			const upper = Math.min(visibleItems.length - 1, lower + 1);
+			const frac = idx - lower;
+			const centerOffset = itemCenterOffset(lower) + (itemCenterOffset(upper) - itemCenterOffset(lower)) * frac;
+
+			gsap.set(list, { y: (viewport?.clientHeight ?? 0) / 2 - centerOffset });
+
+			const nearest = Math.round(idx);
+			visibleItems.forEach((li, i) => {
+				const name = li.querySelector<HTMLButtonElement>('.projects__name');
+				if (!name) return;
+				const dist = Math.abs(i - idx);
+				name.style.opacity = String(clamp(1 - dist * 0.35, 0.25, 1));
+				name.style.fontWeight = String(Math.round(400 + clamp(1 - dist, 0, 1) * 300));
+				name.classList.toggle('is-active', i === nearest);
+			});
+
+			const activeIndex = visibleItems[nearest]?.querySelector<HTMLButtonElement>('.projects__name')?.dataset
+				.index;
+			cards.forEach((card) => card.classList.toggle('is-active', card.dataset.index === activeIndex));
+		}
+
+		function goTo(newTarget: number, duration = 0.7) {
+			target = clamp(newTarget, 0, visibleItems.length - 1);
+			gsap.to(state, {
+				index: target,
+				duration,
+				ease: 'power3.out',
+				overwrite: true,
+				onUpdate: render
+			});
+		}
+
+		viewport.addEventListener(
+			'wheel',
+			(e) => {
+				e.preventDefault();
+				// Damped: a full wheel tick (~100px) only moves ~1/3 of a project,
+				// so scrolling through the list feels gradual instead of instant.
+				goTo(target + e.deltaY * 0.0035, 0.6);
+			},
+			{ passive: false }
+		);
+
+		let touchStartY = 0;
+		viewport.addEventListener(
+			'touchstart',
+			(e) => {
+				touchStartY = e.touches[0].clientY;
+			},
+			{ passive: true }
+		);
+		viewport.addEventListener(
+			'touchmove',
+			(e) => {
+				const dy = touchStartY - e.touches[0].clientY;
+				touchStartY = e.touches[0].clientY;
+				goTo(target + dy * 0.02, 0.3);
+			},
+			{ passive: true }
+		);
+
+		allItems.forEach((li) => {
+			li.querySelector('.projects__name')?.addEventListener('click', () => {
+				const position = visibleItems.indexOf(li);
+				if (position !== -1) goTo(position);
+			});
+		});
+
+		function filterByCategory(category: string) {
+			visibleItems = allItems.filter((li) => {
+				const matches = li.querySelector<HTMLButtonElement>('.projects__name')?.dataset.category === category;
+				li.style.display = matches ? '' : 'none';
+				return matches;
+			});
+			target = 0;
+			state.index = 0;
+			render();
+		}
+
+		tabs.forEach((tab) => {
+			tab.addEventListener('click', () => {
+				tabs.forEach((t) => {
+					t.classList.toggle('is-active', t === tab);
+					t.setAttribute('aria-selected', String(t === tab));
+				});
+				if (tab.dataset.category) filterByCategory(tab.dataset.category);
+			});
+		});
+
+		// Wait a frame so layout (fonts, TiltedCard images) has settled before
+		// measuring offsets for the first render.
+		requestAnimationFrame(render);
+		window.addEventListener('resize', render);
+	}
+</script>

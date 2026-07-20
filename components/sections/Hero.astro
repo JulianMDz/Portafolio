@@ -1,0 +1,83 @@
+---
+import HeroSubtitle from '../HeroSubtitle';
+---
+
+<!--
+	PANTALLA 2 — HERO: nombre grande.
+	El nickname del preloader "aterriza" aquí (animación espejo: las letras
+	entran desde arriba, mientras que en el preloader salían hacia arriba)
+	y, al terminar, dispara el subtítulo con efecto de escritura.
+-->
+<div class="hero" id="hero">
+	<div class="hero-title">
+		<h1>JulianMDz</h1>
+	</div>
+	<div class="hero-subtitle">
+		<HeroSubtitle client:load text="Julian Ricardo Mancera Diaz" />
+	</div>
+</div>
+
+<style>
+	.hero {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+		height: 100vh;
+		text-align: center;
+	}
+
+	.hero-title h1 {
+		margin: 0;
+		font-family: var(--font-sans);
+		font-size: clamp(2rem, 10vw, 16rem);
+		font-weight: bold;
+		color: var(--foreground);
+	}
+
+	.hero-subtitle {
+		min-height: 1.5em;
+		font-family: var(--font-mono);
+		color: var(--foreground);
+	}
+</style>
+
+<script>
+	import { gsap, splitChars, scrollCharsExit, registerEases, prefersReducedMotion } from '../../lib/gsap';
+
+	registerEases();
+
+	const title = document.querySelector<HTMLHeadingElement>('.hero-title h1');
+
+	if (title) {
+		const speed = prefersReducedMotion() ? 0.25 : 1;
+		const split = splitChars(title);
+
+		gsap.set(split.chars, { yPercent: -120 });
+
+		const playHeroTitle = () => {
+			gsap.to(split.chars, {
+				yPercent: 0,
+				duration: 1 * speed,
+				stagger: 0.04 * speed,
+				ease: 'hop',
+				onComplete: () => {
+					(window as any).__heroTitleComplete = true;
+					window.dispatchEvent(new CustomEvent('hero:titleComplete'));
+					// Entrance is event-driven (waits on the preloader), so the
+					// scroll-linked exit is only wired up once it lands — keeps
+					// the same rising-out language the preloader exits with.
+					scrollCharsExit(split.chars, '.hero');
+				}
+			});
+		};
+
+		if ((window as any).__preloaderDone) {
+			playHeroTitle();
+		} else {
+			window.addEventListener('preloader:complete', playHeroTitle, { once: true });
+		}
+	}
+</script>
