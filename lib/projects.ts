@@ -45,7 +45,12 @@ export const projects: Project[] = [
 		category: 'DEV',
 		description: '2.5D cultural platformer exploring Colombian themes.  my responsibility was to create the architecture of the game and codification of the main logic where it was Implemented an Event Bus/Observer architecture using Scriptable Objects to decouple game systems — keeping gameplay, UI and audio independently testable and extensible. ',
 		techs: ['Unity', 'C#', 'Game Development'],
-		images: ['https://picsum.photos/seed/3d1a/1200/800', 'https://picsum.photos/seed/3d1b/1200/800']
+		images: 
+		[
+			'https://res.cloudinary.com/iopo4z4k/image/upload/v1784602952/Screenshot_2026-07-20_220114_zjflq2.png', 
+			'https://res.cloudinary.com/iopo4z4k/image/upload/v1784602952/Screenshot_2026-07-20_220122_x5wwzv.png'
+		],
+		url: 'https://github.com/JulianMDz/TravesiaColombia'
 	},
 	{
 		slug: 'RetroMecha',
@@ -54,7 +59,12 @@ export const projects: Project[] = [
 		category: 'DEV',
 		description: 'Procedural modular robot character generator driven by a formal L-System grammar. Designed the parametric generation logic and built a custom UI panel in Maya that lets advanced users and inexperienced users control character variation without touching code.',
 		techs: ['python', 'Maya', 'Arnold', 'Generative Art'],
-		images: ['https://picsum.photos/seed/dev3a/1200/800', 'https://picsum.photos/seed/dev3b/1200/800']
+		images: ['https://res.cloudinary.com/iopo4z4k/image/upload/v1784610685/Render_qgavij.jpg', 
+			'https://res.cloudinary.com/iopo4z4k/image/upload/v1784610676/Mecha_03_sm1o7r.jpg',
+			'https://res.cloudinary.com/iopo4z4k/image/upload/v1784610621/Screenshot_2026-07-20_235204_ejjacu.png'
+
+		],
+		url: 'https://github.com/JulianMDz/RetroMecha'
 	},
 	{
 		slug: 'devil-sword',
