@@ -42,7 +42,7 @@
   --font-body: 'Hanken Grotesk', system-ui, sans-serif;
   --font-serif: Noto Serif Georgian, ui-serif, serif;
   --font-mono: 'Space Mono', ui-monospace, monospace;
-  --radius: 0.5rem;
+  --radius: 0.75rem;
   --shadow-x: 0.25px;
   --shadow-y: 1px;
   --shadow-blur: 3px;
@@ -101,7 +101,7 @@
   --font-body: 'Hanken Grotesk', system-ui, sans-serif;
   --font-serif: Noto Serif Georgian, ui-serif, serif;
   --font-mono: 'Space Mono', ui-monospace, monospace;
-  --radius: 0.5rem;
+  --radius: 0.75rem;
   --shadow-x: 0.25px;
   --shadow-y: 1px;
   --shadow-blur: 3px;
@@ -174,7 +174,7 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
-  --radius: 0.5rem;
+  --radius: 0.75rem;
   --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
   --tracking-tight: calc(var(--tracking-normal) - 0.025em);
   --tracking-wide: calc(var(--tracking-normal) + 0.025em);

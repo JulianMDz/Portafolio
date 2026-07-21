@@ -6,6 +6,7 @@ import TiltedCard from './TiltedCard';
 interface ProjectGalleryProps {
 	name: string;
 	images: string[];
+	url?: string;
 }
 
 function clamp(value: number, min: number, max: number) {
@@ -17,7 +18,7 @@ function clamp(value: number, min: number, max: number) {
 // dimensions (640x480), which would otherwise overflow the viewport.
 const COMPACT_QUERY = '(max-width: 834px)';
 
-export default function ProjectGallery({ name, images }: ProjectGalleryProps) {
+export default function ProjectGallery({ name, images, url }: ProjectGalleryProps) {
 	const [active, setActive] = useState(0);
 	const [isCompact, setIsCompact] = useState(
 		() => typeof window !== 'undefined' && window.matchMedia(COMPACT_QUERY).matches
@@ -117,19 +118,46 @@ export default function ProjectGallery({ name, images }: ProjectGalleryProps) {
 			</div>
 
 			<div className="project-detail__main" ref={mainRef}>
-				<TiltedCard
-					imageSrc={images[active]}
-					altText={name}
-					captionText={name}
-					containerHeight={isCompact ? '66vw' : '480px'}
-					containerWidth={isCompact ? '88vw' : '640px'}
-					imageHeight={isCompact ? '66vw' : '480px'}
-					imageWidth={isCompact ? '88vw' : '640px'}
-					rotateAmplitude={10}
-					scaleOnHover={1.03}
-					showMobileWarning={false}
-					showTooltip={false}
-				/>
+				{url ? (
+					<a
+						href={url}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="project-detail__main-link"
+						aria-label={`Open the ${name} project`}
+					>
+						<TiltedCard
+							imageSrc={images[active]}
+							altText={name}
+							captionText={name}
+							containerHeight={isCompact ? '66vw' : '480px'}
+							containerWidth={isCompact ? '88vw' : '640px'}
+							imageHeight={isCompact ? '66vw' : '480px'}
+							imageWidth={isCompact ? '88vw' : '640px'}
+							rotateAmplitude={10}
+							scaleOnHover={1.03}
+							showMobileWarning={false}
+							showTooltip={false}
+						/>
+						<span className="project-detail__main-badge" aria-hidden="true">
+							&#8599;
+						</span>
+					</a>
+				) : (
+					<TiltedCard
+						imageSrc={images[active]}
+						altText={name}
+						captionText={name}
+						containerHeight={isCompact ? '66vw' : '480px'}
+						containerWidth={isCompact ? '88vw' : '640px'}
+						imageHeight={isCompact ? '66vw' : '480px'}
+						imageWidth={isCompact ? '88vw' : '640px'}
+						rotateAmplitude={10}
+						scaleOnHover={1.03}
+						showMobileWarning={false}
+						showTooltip={false}
+					/>
+				)}
 			</div>
 		</div>
 	);

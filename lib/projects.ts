@@ -6,60 +6,69 @@ export interface Project {
 	description: string;
 	techs: string[];
 	images: string[];
+	/** Live site / repo / Sketchfab model, etc. — when set, the gallery's main image links out to it. */
+	url?: string;
 }
 
-// TODO: reemplazar por tus proyectos reales (nombre, descripción, techs, imágenes).
+// TODO: reemplazar por tus proyectos reales (nombre, descripción, techs, imágenes, url).
 export const projects: Project[] = [
 	{
-		slug: 'portfolio-website',
-		name: 'Portfolio Website',
+		slug: 'Minotaur D&D',
+		name: 'Minotaur D&D',
 		year: 2025,
-		category: 'DEV',
-		description: 'Personal portfolio built with Astro, React islands and GSAP-driven scroll animations.',
-		techs: ['Astro', 'TypeScript', 'GSAP', 'React'],
-		images: [
-			'https://picsum.photos/seed/dev1a/1200/800',
-			'https://picsum.photos/seed/dev1b/1200/800',
-			'https://picsum.photos/seed/dev1c/1200/800'
-		]
-	},
-	{
-		slug: 'task-manager-app',
-		name: 'Task Manager App',
-		year: 2024,
-		category: 'DEV',
-		description: 'Web app for organizing tasks and tracking progress across projects.',
-		techs: ['React', 'Node.js', 'PostgreSQL'],
-		images: ['https://picsum.photos/seed/dev2a/1200/800', 'https://picsum.photos/seed/dev2b/1200/800']
-	},
-	{
-		slug: 'character-model',
-		name: 'Character Model',
-		year: 2024,
 		category: '3D',
-		description: 'Stylized character model, sculpted, retopologized and textured for real-time rendering.',
-		techs: ['Blender', 'Substance Painter', 'ZBrush'],
+		description: 'This model is inspired by the Dungeons & Dragons universe and was created as part of the Imaginatio XVII project. It was modeled in Maya, rigged; animated in mixamo, sculpted in Blender, and textured and baked using Substance Painter.',
+		techs: ['Blender', 'Substance Painter', 'Maya', 'Mixamo'],
+		images: [
+			'https://res.cloudinary.com/iopo4z4k/image/upload/v1784600554/minotaur_gden01.png',
+			'https://res.cloudinary.com/iopo4z4k/image/upload/v1784600843/Screenshot_2026-07-20_212413_fsuq1m.png',
+
+
+			
+		],
+		url: 'https://sketchfab.com/3d-models/minotaur-dungeons-and-dragons-eef4b2ec5ca94581aca2428d183c67ec'
+	},
+	{
+		slug: 'Guardian D&D',
+		name: 'Guardian D&D',
+		year: 2025,
+		category: '3D',
+		description: 'This model is inspired by the Dungeons & Dragons universe Creation Pipeline Base Modeling: Autodesk Maya Sculpting: Blender Texturing: Adobe Substance I focused on giving him a style that represents the battles he has been through.',
+		techs: ['Maya', 'Blender', 'Substance Painter'],
+		images: ['https://res.cloudinary.com/iopo4z4k/image/upload/v1784601129/Screenshot_2026-07-20_213104_s0cru5.png', 'https://res.cloudinary.com/iopo4z4k/image/upload/v1784601129/Screenshot_2026-07-20_213130_y4ziiy.png'],
+		url: 'https://sketchfab.com/3d-models/guardian-dungeons-dragons-3518ba484ff24fd3896e6c5831ccd1c0'
+	},
+	{
+		slug: 'Travesia Colombia',
+		name: 'Travesia Colombia',
+		year: 2026,
+		category: 'DEV',
+		description: '2.5D cultural platformer exploring Colombian themes.  my responsibility was to create the architecture of the game and codification of the main logic where it was Implemented an Event Bus/Observer architecture using Scriptable Objects to decouple game systems — keeping gameplay, UI and audio independently testable and extensible. ',
+		techs: ['Unity', 'C#', 'Game Development'],
 		images: ['https://picsum.photos/seed/3d1a/1200/800', 'https://picsum.photos/seed/3d1b/1200/800']
 	},
 	{
-		slug: 'api-dashboard',
-		name: 'API Dashboard',
-		year: 2023,
+		slug: 'RetroMecha',
+		name: 'RetroMecha',
+		year: 2026,
 		category: 'DEV',
-		description: 'Internal dashboard for monitoring API usage, latency and error rates.',
-		techs: ['Next.js', 'Chart.js', 'Express'],
+		description: 'Procedural modular robot character generator driven by a formal L-System grammar. Designed the parametric generation logic and built a custom UI panel in Maya that lets advanced users and inexperienced users control character variation without touching code.',
+		techs: ['python', 'Maya', 'Arnold', 'Generative Art'],
 		images: ['https://picsum.photos/seed/dev3a/1200/800', 'https://picsum.photos/seed/dev3b/1200/800']
 	},
 	{
 		slug: 'devil-sword',
 		name: 'Devil Sword',
-		year: 2023,
+		year: 2025,
 		category: '3D',
 		description: 'Hard-surface weapon prop, hand-painted textures with a stylized fantasy look.',
-		techs: ['Blender', 'Substance Painter'],
+		techs: ['Maya', 'Blender', 'Substance Painter'],
 		images: [
 			'https://res.cloudinary.com/iopo4z4k/image/upload/f_auto,q_auto/Sword_morn7g',
-			'https://picsum.photos/seed/3d2b/1200/800'
-		]
+			'https://res.cloudinary.com/iopo4z4k/image/upload/v1784602016/Screenshot_2026-07-20_214541_cxmps4.png',
+			'https://res.cloudinary.com/iopo4z4k/image/upload/v1784602016/Screenshot_2026-07-20_214604_xzmgol.png'
+
+		],
+		url: 'https://sketchfab.com/3d-models/devil-sword-dm5-dante-d7c7c08047df430086c5c4612935414c'
 	}
 ];

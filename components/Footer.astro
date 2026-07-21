@@ -1,6 +1,111 @@
 ---
+import SocialLinks from './SocialLinks.astro';
+
+const year = new Date().getFullYear();
 ---
 
 <footer class="footer">
-	<p>&copy; 2024 JulianMDz</p>
+	<div class="footer__inner">
+		<div class="footer__brand">
+			<a href="#hero" class="footer__logo">MDz</a>
+			<p class="footer__copy">&copy; {year} Julian Mancera Diaz. All rights reserved.</p>
+		</div>
+
+		<SocialLinks />
+
+		<a href="#hero" class="footer__top">
+			Back to top <span aria-hidden="true">&#8593;</span>
+		</a>
+	</div>
 </footer>
+
+<style>
+	.footer {
+		position: relative;
+		border-top: 1px solid color-mix(in oklch, var(--foreground) 12%, transparent);
+		/* GradualBlur's "page-footer" preset is a fixed 5rem blur band pinned
+		   to the bottom of the viewport regardless of scroll position — the
+		   footer's real content needs enough bottom padding to clear it,
+		   otherwise it renders under the blur and becomes unreadable. */
+		padding: 2.5rem 3rem 7rem;
+	}
+
+	.footer__inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1.5rem;
+		max-width: 72rem;
+		margin: 0 auto;
+	}
+
+	.footer__brand {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+	}
+
+	.footer__logo {
+		width: fit-content;
+		font-family: var(--font-sans);
+		font-size: 1.1rem;
+		color: var(--foreground);
+		text-decoration: none;
+		transition: color 0.2s ease;
+	}
+
+	.footer__logo:hover {
+		color: var(--primary);
+	}
+
+	.footer__copy {
+		margin: 0;
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: var(--foreground);
+		opacity: 0.6;
+	}
+
+	.footer__top {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.6rem 1.1rem;
+		border-radius: var(--radius);
+		border: 1px solid color-mix(in oklch, var(--foreground) 12%, transparent);
+		background: color-mix(in oklch, var(--foreground) 6%, transparent);
+		font-family: var(--font-sans);
+		font-size: 0.75rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--foreground);
+		text-decoration: none;
+		transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+	}
+
+	.footer__top:hover {
+		color: var(--primary);
+		background: color-mix(in oklch, var(--primary) 14%, transparent);
+		border-color: color-mix(in oklch, var(--primary) 35%, transparent);
+	}
+
+	@media (max-width: 768px) {
+		.footer__inner {
+			flex-direction: column;
+			text-align: center;
+		}
+
+		.footer__brand {
+			align-items: center;
+		}
+	}
+
+	@media (max-width: 480px) {
+		/* On top of the page-footer blur band, the fixed bottom tab bar
+		   (Nav.astro) also sits on this space — clear both. */
+		.footer {
+			padding-bottom: calc(11rem + env(safe-area-inset-bottom));
+		}
+	}
+</style>

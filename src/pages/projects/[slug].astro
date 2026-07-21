@@ -37,7 +37,7 @@ const { project } = Astro.props;
 				</ul>
 			</div>
 
-			<ProjectGallery client:load name={project.name} images={project.images} />
+			<ProjectGallery client:load name={project.name} images={project.images} url={project.url} />
 		</div>
 	</section>
 </BaseLayout>
@@ -115,7 +115,7 @@ const { project } = Astro.props;
 
 	.project-detail__techs li {
 		padding: 0.4rem 0.85rem;
-		border-radius: 999px;
+		border-radius: calc(var(--radius) - 0.2rem);
 		border: 1px solid color-mix(in oklch, var(--primary) 30%, transparent);
 		background: color-mix(in oklch, var(--primary) 8%, transparent);
 		font-family: var(--font-mono);
@@ -185,6 +185,41 @@ const { project } = Astro.props;
 	.project-detail__thumb.is-active {
 		opacity: 1;
 		border-color: var(--primary);
+	}
+
+	.project-detail__main-link {
+		position: relative;
+		display: block;
+		width: fit-content;
+	}
+
+	.project-detail__main-badge {
+		position: absolute;
+		top: 0.75rem;
+		right: 0.75rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.25rem;
+		height: 2.25rem;
+		border-radius: var(--radius);
+		border: 1px solid color-mix(in oklch, var(--foreground) 12%, transparent);
+		background: color-mix(in oklch, var(--background) 85%, transparent);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		color: var(--foreground);
+		font-size: 1.1rem;
+		opacity: 0;
+		transform: translateY(-4px);
+		transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+		pointer-events: none;
+	}
+
+	.project-detail__main-link:hover .project-detail__main-badge {
+		opacity: 1;
+		transform: translateY(0);
+		color: var(--primary);
+		border-color: color-mix(in oklch, var(--primary) 35%, transparent);
 	}
 
 	@media (max-width: 834px) {

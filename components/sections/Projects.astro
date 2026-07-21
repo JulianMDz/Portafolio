@@ -73,7 +73,7 @@ import { projects } from '../../lib/projects';
 		display: inline-flex;
 		gap: 0.25rem;
 		padding: 0.35rem;
-		border-radius: 999px;
+		border-radius: var(--radius);
 		background: color-mix(in oklch, var(--foreground) 4%, transparent);
 		border: 1px solid color-mix(in oklch, var(--foreground) 10%, transparent);
 	}
@@ -90,7 +90,7 @@ import { projects } from '../../lib/projects';
 	.projects__tab {
 		padding: 0.5rem 1.5rem;
 		border: none;
-		border-radius: 999px;
+		border-radius: calc(var(--radius) - 0.2rem);
 		background: transparent;
 		color: var(--foreground);
 		font-family: var(--font-sans);
@@ -428,7 +428,11 @@ import { projects } from '../../lib/projects';
 				activateCategory(targetButton.dataset.category, targetIndex === -1 ? 0 : targetIndex);
 				history.replaceState(null, '', window.location.pathname + window.location.hash);
 			} else {
-				render();
+				// A plain visit (no deep link) never actually filtered by the
+				// DEV tab that's already marked active in the static HTML —
+				// render() alone doesn't hide the non-matching items, so every
+				// project showed until a tab was clicked. Apply that filter now.
+				activateCategory('DEV');
 			}
 		});
 		window.addEventListener('resize', render);
