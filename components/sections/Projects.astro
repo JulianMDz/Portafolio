@@ -1,20 +1,6 @@
 ---
 import TiltedCard from '../TiltedCard';
-
-interface Project {
-	name: string;
-	category: 'DEV' | '3D';
-	image: string;
-}
-
-// TODO: reemplazar por tus proyectos reales (nombre + imagen).
-const projects: Project[] = [
-	{ name: 'Portfolio Website', category: 'DEV', image: 'https://picsum.photos/seed/dev1/600/600' },
-	{ name: 'Task Manager App', category: 'DEV', image: 'https://picsum.photos/seed/dev2/600/600' },
-	{ name: 'Character Model', category: '3D', image: 'https://picsum.photos/seed/3d1/600/600' },
-	{ name: 'API Dashboard', category: 'DEV', image: 'https://picsum.photos/seed/dev3/600/600' },
-	{ name: 'Devil Sword', category: '3D', image: 'https://res.cloudinary.com/iopo4z4k/image/upload/f_auto,q_auto/Sword_morn7g' }
-];
+import { projects } from '../../lib/projects';
 ---
 
 <!-- PANTALLA 4 — SECTION PROJECTS -->
@@ -39,6 +25,7 @@ const projects: Project[] = [
 							class:list={[{ 'is-active': i === 0 }]}
 							data-index={i}
 							data-category={project.category}
+							data-slug={project.slug}
 						>
 							{project.name}
 						</button>
@@ -50,20 +37,22 @@ const projects: Project[] = [
 		<div class="projects__cards">
 			{projects.map((project, i) => (
 				<div class="projects__card" class:list={[{ 'is-active': i === 0 }]} data-index={i} data-category={project.category}>
-					<TiltedCard
-						client:visible
-						imageSrc={project.image}
-						altText={project.name}
-						captionText={project.name}
-						containerHeight="320px"
-						containerWidth="320px"
-						imageHeight="320px"
-						imageWidth="320px"
-						rotateAmplitude={22}
-						scaleOnHover={1.05}
-						showMobileWarning={false}
-						showTooltip
-					/>
+					<a href={`/projects/${project.slug}`} class="projects__card-link" aria-label={`View ${project.name} project`}>
+						<TiltedCard
+							client:visible
+							imageSrc={project.images[0]}
+							altText={project.name}
+							captionText={project.name}
+							containerHeight="320px"
+							containerWidth="460px"
+							imageHeight="320px"
+							imageWidth="460px"
+							rotateAmplitude={22}
+							scaleOnHover={1.05}
+							showMobileWarning={false}
+							showTooltip
+						/>
+					</a>
 				</div>
 			))}
 		</div>
@@ -159,7 +148,7 @@ const projects: Project[] = [
 
 	.projects__cards {
 		position: relative;
-		width: 320px;
+		width: 480px;
 		height: 320px;
 	}
 
@@ -169,6 +158,11 @@ const projects: Project[] = [
 
 	.projects__card.is-active {
 		display: block;
+	}
+
+	.projects__card-link {
+		display: block;
+		text-decoration: none;
 	}
 </style>
 
@@ -212,6 +206,10 @@ const projects: Project[] = [
 			gsap.set(list, { y: (viewport?.clientHeight ?? 0) / 2 - centerOffset });
 
 			const nearest = Math.round(idx);
+			allItems.forEach((li) => {
+				const name = li.querySelector<HTMLButtonElement>('.projects__name');
+				if (name && !visibleItems.includes(li)) name.classList.remove('is-active');
+			});
 			visibleItems.forEach((li, i) => {
 				const name = li.querySelector<HTMLButtonElement>('.projects__name');
 				if (!name) return;
@@ -273,30 +271,56 @@ const projects: Project[] = [
 			});
 		});
 
-		function filterByCategory(category: string) {
+		function filterByCategory(category: string, keepIndex = 0) {
 			visibleItems = allItems.filter((li) => {
 				const matches = li.querySelector<HTMLButtonElement>('.projects__name')?.dataset.category === category;
 				li.style.display = matches ? '' : 'none';
 				return matches;
 			});
-			target = 0;
-			state.index = 0;
+			target = keepIndex;
+			state.index = keepIndex;
 			render();
+		}
+
+		function activateCategory(category: string, keepIndex = 0) {
+			tabs.forEach((t) => {
+				const isMatch = t.dataset.category === category;
+				t.classList.toggle('is-active', isMatch);
+				t.setAttribute('aria-selected', String(isMatch));
+			});
+			filterByCategory(category, keepIndex);
 		}
 
 		tabs.forEach((tab) => {
 			tab.addEventListener('click', () => {
-				tabs.forEach((t) => {
-					t.classList.toggle('is-active', t === tab);
-					t.setAttribute('aria-selected', String(t === tab));
-				});
-				if (tab.dataset.category) filterByCategory(tab.dataset.category);
+				if (tab.dataset.category) activateCategory(tab.dataset.category);
 			});
 		});
 
+		// If arriving from a project's detail page (Back link carries ?project=slug),
+		// land on that project's category with it already selected instead of
+		// always resetting to the first DEV project.
+		const targetSlug = new URLSearchParams(window.location.search).get('project');
+		const targetItem = targetSlug
+			? allItems.find((li) => li.querySelector<HTMLButtonElement>('.projects__name')?.dataset.slug === targetSlug)
+			: undefined;
+		const targetButton = targetItem?.querySelector<HTMLButtonElement>('.projects__name');
+
 		// Wait a frame so layout (fonts, TiltedCard images) has settled before
 		// measuring offsets for the first render.
-		requestAnimationFrame(render);
+		requestAnimationFrame(() => {
+			if (targetButton?.dataset.category) {
+				const categoryItems = allItems.filter(
+					(li) =>
+						li.querySelector<HTMLButtonElement>('.projects__name')?.dataset.category === targetButton.dataset.category
+				);
+				const targetIndex = categoryItems.indexOf(targetItem!);
+				activateCategory(targetButton.dataset.category, targetIndex === -1 ? 0 : targetIndex);
+				history.replaceState(null, '', window.location.pathname + window.location.hash);
+			} else {
+				render();
+			}
+		});
 		window.addEventListener('resize', render);
 	}
 </script>

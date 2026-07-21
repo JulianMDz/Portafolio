@@ -83,6 +83,14 @@
 				window.dispatchEvent(new CustomEvent('preloader:complete'));
 				document.documentElement.classList.remove('is-loading');
 				preloader.remove();
+
+				// While `is-loading` hid overflow, the browser's native
+				// scroll-to-hash (from a URL like /#projects) got reset to the
+				// top. Now that scrolling is possible again, jump straight to
+				// the target instead of leaving the user stranded at the Hero.
+				if (window.location.hash) {
+					document.querySelector(window.location.hash)?.scrollIntoView({ behavior: 'instant' as ScrollBehavior });
+				}
 			}
 		});
 

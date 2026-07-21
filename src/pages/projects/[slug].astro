@@ -1,0 +1,186 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectGallery from '../../../components/ProjectGallery';
+import { projects } from '../../../lib/projects';
+
+export function getStaticPaths() {
+	return projects.map((project) => ({
+		params: { slug: project.slug },
+		props: { project }
+	}));
+}
+
+const { project } = Astro.props;
+---
+
+<BaseLayout title={`${project.name} — Portafolio`} showNav={false} showFooter={false}>
+	<section class="project-detail">
+		<a href={`/?project=${project.slug}#projects`} class="project-detail__back">&#8598; Back</a>
+
+		<div class="project-detail__layout">
+			<div class="project-detail__info">
+				<h1 class="project-detail__title">
+					{project.name} <span class="project-detail__year">{project.year}</span>
+				</h1>
+
+				<p class="project-detail__description">{project.description}</p>
+
+				<ul class="project-detail__techs">
+					{project.techs.map((tech) => (
+						<li>{tech.toUpperCase()}</li>
+					))}
+				</ul>
+			</div>
+
+			<ProjectGallery client:load name={project.name} images={project.images} />
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.project-detail {
+		display: flex;
+		flex-direction: column;
+		gap: 3rem;
+		min-height: 100vh;
+		padding: 6rem 3rem 4rem;
+	}
+
+	.project-detail__back {
+		align-self: flex-start;
+		font-family: var(--font-sans);
+		font-size: 0.85rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--foreground);
+		text-decoration: none;
+	}
+
+	.project-detail__back:hover {
+		text-decoration: underline;
+	}
+
+	.project-detail__layout {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: center;
+		gap: 3rem;
+		flex: 1;
+	}
+
+	.project-detail__title {
+		display: flex;
+		align-items: baseline;
+		gap: 0.75rem;
+		margin: 0 0 1.5rem;
+		font-family: var(--font-sans);
+		font-size: clamp(2.5rem, 6vw, 5rem);
+		font-weight: 800;
+		color: var(--foreground);
+	}
+
+	.project-detail__year {
+		font-size: 1rem;
+		font-weight: 400;
+		opacity: 0.6;
+	}
+
+	.project-detail__description {
+		max-width: 28rem;
+		margin: 0 0 1.5rem;
+		font-family: var(--font-sans);
+		font-size: 1rem;
+		line-height: 1.6;
+		color: var(--foreground);
+		opacity: 0.75;
+	}
+
+	.project-detail__techs {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.project-detail__techs li {
+		padding: 0.4rem 0.85rem;
+		border-radius: 999px;
+		border: 1px solid color-mix(in oklch, var(--foreground) 15%, transparent);
+		background: color-mix(in oklch, var(--foreground) 5%, transparent);
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		letter-spacing: 0.05em;
+		color: var(--foreground);
+	}
+</style>
+
+<style is:global>
+	.project-detail__gallery {
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+	}
+
+	.project-detail__thumbs {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		max-height: 480px;
+		overflow-y: auto;
+		padding: 0.25rem;
+		scroll-behavior: smooth;
+		scrollbar-width: none;
+	}
+
+	.project-detail__thumbs::-webkit-scrollbar {
+		display: none;
+	}
+
+	.project-detail__thumb {
+		flex-shrink: 0;
+		width: 96px;
+		height: 64px;
+		padding: 0;
+		border-radius: 0.5rem;
+		border: 2px solid transparent;
+		overflow: hidden;
+		cursor: pointer;
+		opacity: 0.5;
+		transition: opacity 0.2s ease, border-color 0.2s ease;
+	}
+
+	.project-detail__thumb img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	.project-detail__thumb:hover {
+		opacity: 0.8;
+	}
+
+	.project-detail__thumb.is-active {
+		opacity: 1;
+		border-color: var(--foreground);
+	}
+
+	@media (max-width: 900px) {
+		.project-detail__layout {
+			grid-template-columns: 1fr;
+		}
+
+		.project-detail__gallery {
+			flex-direction: column-reverse;
+		}
+
+		.project-detail__thumbs {
+			flex-direction: row;
+			max-height: none;
+			max-width: 100%;
+		}
+	}
+</style>
