@@ -31,7 +31,9 @@ function DropdownMenuContent({
   return (
     <MenuPrimitive.Portal>
       <MenuPrimitive.Positioner
-        className="isolate z-50 outline-none"
+        // z-50 sat below the site's fixed nav (z-index 1200), so menus
+        // opening near the top of the page had their items covered by it.
+        className="isolate z-[1300] outline-none"
         align={align}
         alignOffset={alignOffset}
         side={side}

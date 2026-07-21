@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProjectGallery from '../../../components/ProjectGallery';
+import ScrambledText from '../../../components/ScrambledText';
 import { projects } from '../../../lib/projects';
 
 export function getStaticPaths() {
@@ -23,7 +24,11 @@ const { project } = Astro.props;
 					{project.name} <span class="project-detail__year">{project.year}</span>
 				</h1>
 
-				<p class="project-detail__description">{project.description}</p>
+				<div class="project-detail__description">
+					<ScrambledText client:visible radius={80} duration={1} speed={0.5} scrambleChars=".:">
+						{project.description}
+					</ScrambledText>
+				</div>
 
 				<ul class="project-detail__techs">
 					{project.techs.map((tech) => (
@@ -55,9 +60,11 @@ const { project } = Astro.props;
 		letter-spacing: 0.05em;
 		color: var(--foreground);
 		text-decoration: none;
+		transition: color 0.2s ease;
 	}
 
 	.project-detail__back:hover {
+		color: var(--primary);
 		text-decoration: underline;
 	}
 
@@ -89,11 +96,12 @@ const { project } = Astro.props;
 	.project-detail__description {
 		max-width: 28rem;
 		margin: 0 0 1.5rem;
-		font-family: var(--font-sans);
-		font-size: 1rem;
+		font-family: var(--font-body);
+		font-size: clamp(1rem, 1.4vw, 1.15rem);
+		font-weight: 400;
 		line-height: 1.6;
 		color: var(--foreground);
-		opacity: 0.75;
+		opacity: 0.85;
 	}
 
 	.project-detail__techs {
@@ -108,12 +116,23 @@ const { project } = Astro.props;
 	.project-detail__techs li {
 		padding: 0.4rem 0.85rem;
 		border-radius: 999px;
-		border: 1px solid color-mix(in oklch, var(--foreground) 15%, transparent);
-		background: color-mix(in oklch, var(--foreground) 5%, transparent);
+		border: 1px solid color-mix(in oklch, var(--primary) 30%, transparent);
+		background: color-mix(in oklch, var(--primary) 8%, transparent);
 		font-family: var(--font-mono);
 		font-size: 0.7rem;
 		letter-spacing: 0.05em;
-		color: var(--foreground);
+		color: var(--primary);
+	}
+
+	/* Lives here (not in the is:global block below) because Astro scopes
+	   this file's own selectors with a data-astro-cid attribute, raising
+	   their specificity — an unscoped override in the global block was
+	   losing to the desktop rule above regardless of media query, leaving
+	   the grid stuck at 2 columns and squeezing the text column to ~0px. */
+	@media (max-width: 834px) {
+		.project-detail__layout {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>
 
@@ -165,14 +184,10 @@ const { project } = Astro.props;
 
 	.project-detail__thumb.is-active {
 		opacity: 1;
-		border-color: var(--foreground);
+		border-color: var(--primary);
 	}
 
-	@media (max-width: 900px) {
-		.project-detail__layout {
-			grid-template-columns: 1fr;
-		}
-
+	@media (max-width: 834px) {
 		.project-detail__gallery {
 			flex-direction: column-reverse;
 		}
@@ -184,3 +199,48 @@ const { project } = Astro.props;
 		}
 	}
 </style>
+
+<script>
+	import { gsap, splitChars, registerEases, prefersReducedMotion } from '../../../lib/gsap';
+
+	registerEases();
+
+	// Page-load entrance: back link and title lead, description/techs/gallery
+	// follow in a light stagger — same "hop" language as the rest of the site,
+	// just triggered on load instead of scroll since this page opens straight
+	// into its content.
+	const speed = prefersReducedMotion() ? 0.25 : 1;
+	const back = document.querySelector<HTMLAnchorElement>('.project-detail__back');
+	const title = document.querySelector<HTMLHeadingElement>('.project-detail__title');
+	const description = document.querySelector<HTMLDivElement>('.project-detail__description');
+	const techs = document.querySelector<HTMLUListElement>('.project-detail__techs');
+	const gallery = document.querySelector<HTMLDivElement>('.project-detail__gallery');
+
+	const tl = gsap.timeline({ defaults: { ease: 'hop' } });
+
+	if (back) {
+		gsap.set(back, { y: -12, opacity: 0 });
+		tl.to(back, { y: 0, opacity: 1, duration: 0.5 * speed }, 0);
+	}
+
+	if (title) {
+		const split = splitChars(title);
+		gsap.set(split.chars, { yPercent: 120 });
+		tl.to(split.chars, { yPercent: 0, duration: 0.8 * speed, stagger: 0.02 }, 0.1);
+	}
+
+	if (description) {
+		gsap.set(description, { y: 20, opacity: 0 });
+		tl.to(description, { y: 0, opacity: 0.85, duration: 0.6 * speed }, 0.35);
+	}
+
+	if (techs?.children.length) {
+		gsap.set(techs.children, { y: 12, opacity: 0 });
+		tl.to(techs.children, { y: 0, opacity: 1, duration: 0.4 * speed, stagger: 0.05 }, 0.5);
+	}
+
+	if (gallery) {
+		gsap.set(gallery, { y: 20, opacity: 0 });
+		tl.to(gallery, { y: 0, opacity: 1, duration: 0.7 * speed }, 0.3);
+	}
+</script>

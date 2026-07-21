@@ -1,31 +1,380 @@
 ---
 import ScrambledText from '../ScrambledText';
+import { skills } from '../../lib/skills';
 ---
 
 <!-- PANTALLA 5 — SECTION ABOUT ME (dos columnas) -->
 <section id="about" class="section about">
-	<span class="section__tag">&lt;Section About Me&gt;</span>
-
 	<div class="about__grid">
 		<!-- columna izquierda: texto -->
 		<div class="about__text">
-			<!-- TODO: reemplazar por tu bio real -->
-			<ScrambledText client:visible radius={80} duration={1} speed={0.5} scrambleChars=".:">
-				I care about the small details that make an interface feel alive: motion, timing, and the space between elements.
-			</ScrambledText>
+			<h2 class="about__title">About Me</h2>
+
+			<div class="about__heading">
+				<!-- TODO: reemplazar por tu bio real -->
+				<ScrambledText client:visible radius={80} duration={1} speed={0.5} scrambleChars=".:">
+					Developer and 3D artist, passionate about building web experiences with attention to detail and
+					motion.
+				</ScrambledText>
+			</div>
+
+			<a href="#description" class="about__contact">
+				Contact me <span aria-hidden="true">&#8599;</span>
+			</a>
 		</div>
 
 		<!-- columna derecha: skills -->
 		<div class="about__skills">
-			<span class="section__tag">&lt;section skills&gt;</span>
+			<div class="skills__viewport">
+				{skills.map((category, i) => (
+					<div class="skill-category" class:list={[{ 'is-open': i === 0 }]} data-index={i}>
+						<button type="button" class="skill-category__header" aria-expanded={i === 0}>
+							<span class="skill-category__name">{category.name}</span>
+							<span class="skill-category__icon" aria-hidden="true"></span>
+						</button>
 
-			<ul class="skills__list">
-				<li class="skill">Skill Family</li>
-				<li class="skill">Skill Family</li>
-				<li class="skill">Skill Family</li>
-				<li class="skill">Skill Family</li>
-				<li class="skill">Skill Family</li>
-			</ul>
+						<div class="skill-category__panel">
+							<ul class="skill-category__list">
+								{category.items.map((item) => (
+									<li>{item}</li>
+								))}
+							</ul>
+						</div>
+					</div>
+				))}
+			</div>
+
+			<div class="skills__progress" aria-hidden="true">
+				<div class="skills__progress-track">
+					<div class="skills__progress-thumb"></div>
+				</div>
+			</div>
 		</div>
 	</div>
 </section>
+
+<style>
+	.about {
+		display: flex;
+		align-items: center;
+		min-height: 100vh;
+		padding: 4rem 1.5rem;
+	}
+
+	.about__grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: 4rem;
+		width: 100%;
+		max-width: 72rem;
+		margin: 0 auto;
+	}
+
+	.about__text {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+	}
+
+	.about__title {
+		margin: 0;
+		font-family: var(--font-sans);
+		font-size: clamp(2.5rem, 6vw, 5rem);
+		font-weight: 700;
+		text-transform: uppercase;
+		line-height: 1;
+		color: var(--foreground);
+	}
+
+	.about__heading {
+		margin: 0;
+		font-family: var(--font-body);
+		font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+		font-weight: 400;
+		line-height: 1.5;
+		color: var(--foreground);
+		opacity: 0.85;
+	}
+
+	.about__contact {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		width: fit-content;
+		padding-top: 1.5rem;
+		border-top: 1px solid color-mix(in oklch, var(--foreground) 15%, transparent);
+		font-family: var(--font-sans);
+		font-size: 0.9rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--foreground);
+		text-decoration: none;
+		transition: color 0.2s ease;
+	}
+
+	.about__contact:hover {
+		color: var(--primary);
+		text-decoration: underline;
+	}
+
+	.about__skills {
+		display: flex;
+		align-items: stretch;
+		gap: 1.5rem;
+	}
+
+	.skills__viewport {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		/* Fixed-ish box: always exactly one panel open, so this comfortably
+		   fits every category (even the longest) without growing the page
+		   or needing more scroll room than the section naturally has. */
+		min-height: 32rem;
+		justify-content: center;
+	}
+
+	.skills__progress {
+		flex-shrink: 0;
+		width: 2px;
+		padding: 0.5rem 0;
+	}
+
+	.skills__progress-track {
+		position: relative;
+		height: 100%;
+		background: color-mix(in oklch, var(--foreground) 12%, transparent);
+	}
+
+	.skills__progress-thumb {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		background: var(--primary);
+		transition: transform 0.4s ease;
+	}
+
+	.skill-category {
+		border-bottom: 1px solid color-mix(in oklch, var(--foreground) 12%, transparent);
+	}
+
+	.skill-category__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		padding: 1.5rem 0;
+		border: none;
+		background: transparent;
+		cursor: pointer;
+		text-align: left;
+	}
+
+	.skill-category__name {
+		font-family: var(--font-sans);
+		font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+		font-weight: 700;
+		color: var(--foreground);
+		opacity: 0.55;
+		transition: opacity 0.3s ease, color 0.3s ease;
+	}
+
+	.skill-category.is-open .skill-category__name {
+		opacity: 1;
+		color: var(--primary);
+	}
+
+	.skill-category__icon {
+		position: relative;
+		flex-shrink: 0;
+		width: 1rem;
+		height: 1rem;
+	}
+
+	.skill-category__icon::before,
+	.skill-category__icon::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		background: var(--foreground);
+		transform: translate(-50%, -50%);
+		transition: transform 0.3s ease, background-color 0.3s ease;
+	}
+
+	.skill-category.is-open .skill-category__icon::before,
+	.skill-category.is-open .skill-category__icon::after {
+		background: var(--primary);
+	}
+
+	.skill-category__icon::before {
+		width: 1rem;
+		height: 2px;
+	}
+
+	.skill-category__icon::after {
+		width: 2px;
+		height: 1rem;
+	}
+
+	.skill-category.is-open .skill-category__icon::after {
+		transform: translate(-50%, -50%) rotate(90deg) scaleY(0);
+	}
+
+	.skill-category__panel {
+		display: grid;
+		grid-template-rows: 0fr;
+		transition: grid-template-rows 0.45s ease;
+	}
+
+	.skill-category.is-open .skill-category__panel {
+		grid-template-rows: 1fr;
+	}
+
+	.skill-category__list {
+		overflow: hidden;
+		min-height: 0;
+		margin: 0;
+		padding: 0 0 1.5rem;
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.skill-category__list li {
+		font-family: var(--font-mono);
+		font-size: 0.95rem;
+		color: var(--foreground);
+		opacity: 0.7;
+	}
+
+	@media (max-width: 768px) {
+		/* Forcing a full viewport height per section left huge empty gaps
+		   on mobile, where the content itself is much shorter than 100vh —
+		   let the section hug its content instead. */
+		.about {
+			min-height: auto;
+			padding: 5rem 1.5rem;
+		}
+
+		.about__grid {
+			grid-template-columns: 1fr;
+			gap: 2.5rem;
+		}
+	}
+</style>
+
+<script>
+	import { gsap, registerEases } from '../../lib/gsap';
+
+	registerEases();
+
+	function clamp(value: number, min: number, max: number) {
+		return Math.min(max, Math.max(min, value));
+	}
+
+	// Entrance: title, bio and contact link rise and fade in first, then the
+	// whole skills panel follows — same "hop" language used across the site.
+	const aboutText = document.querySelectorAll('.about__title, .about__heading, .about__contact');
+	const aboutSkills = document.querySelector('.about__skills');
+
+	if (aboutText.length && aboutSkills) {
+		gsap.set([...aboutText, aboutSkills], { y: 32, opacity: 0 });
+		gsap.to(aboutText, {
+			y: 0,
+			opacity: 1,
+			duration: 0.7,
+			stagger: 0.12,
+			ease: 'hop',
+			scrollTrigger: {
+				trigger: '#about',
+				start: 'top 70%',
+				toggleActions: 'play none none reverse'
+			}
+		});
+		gsap.to(aboutSkills, {
+			y: 0,
+			opacity: 1,
+			duration: 0.8,
+			delay: 0.15,
+			ease: 'hop',
+			scrollTrigger: {
+				trigger: '#about',
+				start: 'top 70%',
+				toggleActions: 'play none none reverse'
+			}
+		});
+	}
+
+	const viewport = document.querySelector<HTMLDivElement>('.skills__viewport');
+	const categories = Array.from(document.querySelectorAll<HTMLDivElement>('.skill-category'));
+	const headers = categories.map((cat) => cat.querySelector<HTMLButtonElement>('.skill-category__header'));
+	const progressThumb = document.querySelector<HTMLDivElement>('.skills__progress-thumb');
+	const progressTrack = document.querySelector<HTMLDivElement>('.skills__progress-track');
+
+	let active = 0;
+	let locked = false;
+
+	function updateProgress() {
+		if (!progressThumb || !progressTrack || categories.length < 2) return;
+		const trackHeight = progressTrack.clientHeight;
+		const thumbHeight = trackHeight / categories.length;
+		progressThumb.style.height = `${thumbHeight}px`;
+		progressThumb.style.transform = `translateY(${active * thumbHeight}px)`;
+	}
+
+	function setOpen(index: number) {
+		active = index;
+		categories.forEach((cat, i) => {
+			const isOpen = i === index;
+			cat.classList.toggle('is-open', isOpen);
+			headers[i]?.setAttribute('aria-expanded', String(isOpen));
+		});
+		updateProgress();
+
+		// The CSS grid-rows trick handles the panel's height reveal; this
+		// layers a quick stagger on the newly-visible items themselves so
+		// they don't just pop in as a block.
+		const items = categories[index]?.querySelectorAll<HTMLLIElement>('.skill-category__list li');
+		if (items?.length) {
+			gsap.fromTo(
+				items,
+				{ opacity: 0, x: -8 },
+				{ opacity: 0.7, x: 0, duration: 0.4, stagger: 0.04, ease: 'power2.out', delay: 0.15, overwrite: true }
+			);
+		}
+	}
+
+	headers.forEach((header, i) => {
+		header?.addEventListener('click', () => setOpen(i));
+	});
+
+	// Self-contained carousel, same idea as the homepage project list and
+	// the project-detail gallery: wheel input here cycles through categories
+	// directly instead of relying on document scroll distance, which ran out
+	// before every category got a turn. At the first/last category the wheel
+	// event is left alone so the page keeps scrolling normally.
+	if (viewport && categories.length > 1) {
+		viewport.addEventListener(
+			'wheel',
+			(e) => {
+				if (locked) return;
+				const next = clamp(active + (e.deltaY > 0 ? 1 : -1), 0, categories.length - 1);
+				if (next === active) return;
+				e.preventDefault();
+				locked = true;
+				setOpen(next);
+				setTimeout(() => {
+					locked = false;
+				}, 450);
+			},
+			{ passive: false }
+		);
+	}
+
+	updateProgress();
+	window.addEventListener('resize', updateProgress);
+</script>

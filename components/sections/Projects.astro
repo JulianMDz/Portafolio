@@ -19,8 +19,8 @@ import { projects } from '../../lib/projects';
 			<ul class="projects__list">
 				{projects.map((project, i) => (
 					<li>
-						<button
-							type="button"
+						<a
+							href={`/projects/${project.slug}`}
 							class="projects__name"
 							class:list={[{ 'is-active': i === 0 }]}
 							data-index={i}
@@ -28,7 +28,7 @@ import { projects } from '../../lib/projects';
 							data-slug={project.slug}
 						>
 							{project.name}
-						</button>
+						</a>
 					</li>
 				))}
 			</ul>
@@ -107,7 +107,8 @@ import { projects } from '../../lib/projects';
 
 	.projects__tab.is-active {
 		opacity: 1;
-		background: color-mix(in oklch, var(--foreground) 10%, transparent);
+		color: var(--primary);
+		background: color-mix(in oklch, var(--primary) 14%, transparent);
 	}
 
 	.projects__content {
@@ -144,6 +145,11 @@ import { projects } from '../../lib/projects';
 		font-size: clamp(1.1rem, 2vw, 1.5rem);
 		text-align: left;
 		cursor: pointer;
+		transition: color 0.2s ease;
+	}
+
+	.projects__name.is-active {
+		color: var(--primary);
 	}
 
 	.projects__cards {
@@ -164,10 +170,70 @@ import { projects } from '../../lib/projects';
 		display: block;
 		text-decoration: none;
 	}
+
+	/* Mobile: no room (or need) for the image carousel — just a plain,
+	   fully visible list of names that link straight to each project's
+	   detail page, instead of the wheel-driven single-item viewport. */
+	@media (max-width: 480px) {
+		.projects__content {
+			grid-template-columns: 1fr;
+		}
+
+		.projects__list-viewport {
+			height: auto;
+			overflow: visible;
+			mask-image: none;
+			touch-action: auto;
+		}
+
+		.projects__name {
+			display: block;
+			padding: 0.5rem 0;
+			text-decoration: none;
+		}
+
+		.projects__cards {
+			display: none;
+		}
+	}
+
+	/* Forcing a full viewport height per section left huge empty gaps on
+	   mobile, where the content itself is much shorter than 100vh — let the
+	   section hug its content instead. */
+	@media (max-width: 768px) {
+		.projects {
+			min-height: auto;
+			padding: 5rem 1.5rem;
+		}
+	}
 </style>
 
 <script>
-	import { gsap } from '../../lib/gsap';
+	import { gsap, registerEases } from '../../lib/gsap';
+
+	registerEases();
+
+	// Entrance: title, tabs and the list/card panel rise and fade in together
+	// as the section scrolls into view, same "hop" language as Description.
+	const sectionTag = document.querySelector('.projects .section-tag');
+	const tabsWrap = document.querySelector('.projects__tabs');
+	const content = document.querySelector('.projects__content');
+
+	if (sectionTag && tabsWrap && content) {
+		gsap.set([sectionTag, tabsWrap, content], { y: 32, opacity: 0 });
+		gsap.to([sectionTag, tabsWrap, content], {
+			y: 0,
+			opacity: 1,
+			duration: 0.8,
+			stagger: 0.12,
+			ease: 'hop',
+			scrollTrigger: {
+				trigger: '#projects',
+				start: 'top 70%',
+				toggleActions: 'play none none reverse'
+			}
+		});
+	}
 
 	const tabs = document.querySelectorAll<HTMLButtonElement>('.projects__tab');
 	const cards = document.querySelectorAll<HTMLDivElement>('.projects__card');
@@ -177,6 +243,10 @@ import { projects } from '../../lib/projects';
 
 	function clamp(value: number, min: number, max: number) {
 		return Math.min(max, Math.max(min, value));
+	}
+
+	function isMobileLayout() {
+		return window.matchMedia('(max-width: 480px)').matches;
 	}
 
 	if (viewport && list && allItems.length) {
@@ -197,6 +267,21 @@ import { projects } from '../../lib/projects';
 		function render() {
 			if (!visibleItems.length) return;
 
+			// Mobile has no image carousel to sync against — it's a plain
+			// list of link names, so skip the positioning transform and
+			// leave every name at its natural style (in case of a resize
+			// down from desktop, where inline styles may already be set).
+			if (isMobileLayout()) {
+				gsap.set(list, { y: 0 });
+				allItems.forEach((li) => {
+					const name = li.querySelector<HTMLAnchorElement>('.projects__name');
+					if (!name) return;
+					name.style.opacity = '';
+					name.style.fontWeight = '';
+				});
+				return;
+			}
+
 			const idx = clamp(state.index, 0, visibleItems.length - 1);
 			const lower = Math.floor(idx);
 			const upper = Math.min(visibleItems.length - 1, lower + 1);
@@ -207,11 +292,11 @@ import { projects } from '../../lib/projects';
 
 			const nearest = Math.round(idx);
 			allItems.forEach((li) => {
-				const name = li.querySelector<HTMLButtonElement>('.projects__name');
+				const name = li.querySelector<HTMLAnchorElement>('.projects__name');
 				if (name && !visibleItems.includes(li)) name.classList.remove('is-active');
 			});
 			visibleItems.forEach((li, i) => {
-				const name = li.querySelector<HTMLButtonElement>('.projects__name');
+				const name = li.querySelector<HTMLAnchorElement>('.projects__name');
 				if (!name) return;
 				const dist = Math.abs(i - idx);
 				name.style.opacity = String(clamp(1 - dist * 0.35, 0.25, 1));
@@ -219,9 +304,23 @@ import { projects } from '../../lib/projects';
 				name.classList.toggle('is-active', i === nearest);
 			});
 
-			const activeIndex = visibleItems[nearest]?.querySelector<HTMLButtonElement>('.projects__name')?.dataset
+			// Real-time: whichever card is nearest is shown instantly (no
+			// animation here) so the image always tracks the list as it
+			// scrolls — the pop-in only plays once scrolling actually settles,
+			// see goTo()'s onComplete below.
+			const activeIndex = visibleItems[nearest]?.querySelector<HTMLAnchorElement>('.projects__name')?.dataset
 				.index;
 			cards.forEach((card) => card.classList.toggle('is-active', card.dataset.index === activeIndex));
+		}
+
+		function popActiveCard() {
+			const activeCard = Array.from(cards).find((card) => card.classList.contains('is-active'));
+			if (!activeCard) return;
+			gsap.fromTo(
+				activeCard,
+				{ opacity: 0, scale: 0.92, y: 14 },
+				{ opacity: 1, scale: 1, y: 0, duration: 0.5, ease: 'hop', overwrite: true }
+			);
 		}
 
 		function goTo(newTarget: number, duration = 0.7) {
@@ -231,13 +330,18 @@ import { projects } from '../../lib/projects';
 				duration,
 				ease: 'power3.out',
 				overwrite: true,
-				onUpdate: render
+				onUpdate: render,
+				// A fast multi-item scroll overwrites this tween repeatedly, so
+				// onComplete only ever fires for the one that actually finishes
+				// — i.e. once the user has settled on a project, not per frame.
+				onComplete: popActiveCard
 			});
 		}
 
 		viewport.addEventListener(
 			'wheel',
 			(e) => {
+				if (isMobileLayout()) return; // let the page scroll normally over the plain link list
 				e.preventDefault();
 				// Damped: a full wheel tick (~100px) only moves ~1/3 of a project,
 				// so scrolling through the list feels gradual instead of instant.
@@ -250,6 +354,7 @@ import { projects } from '../../lib/projects';
 		viewport.addEventListener(
 			'touchstart',
 			(e) => {
+				if (isMobileLayout()) return; // no carousel to drag — let native touch scrolling handle the page
 				touchStartY = e.touches[0].clientY;
 			},
 			{ passive: true }
@@ -257,6 +362,7 @@ import { projects } from '../../lib/projects';
 		viewport.addEventListener(
 			'touchmove',
 			(e) => {
+				if (isMobileLayout()) return;
 				const dy = touchStartY - e.touches[0].clientY;
 				touchStartY = e.touches[0].clientY;
 				goTo(target + dy * 0.02, 0.3);
@@ -265,7 +371,11 @@ import { projects } from '../../lib/projects';
 		);
 
 		allItems.forEach((li) => {
-			li.querySelector('.projects__name')?.addEventListener('click', () => {
+			li.querySelector<HTMLAnchorElement>('.projects__name')?.addEventListener('click', (e) => {
+				// On mobile there's no card preview to select — the name is a
+				// plain link, so let it navigate to the project page normally.
+				if (isMobileLayout()) return;
+				e.preventDefault();
 				const position = visibleItems.indexOf(li);
 				if (position !== -1) goTo(position);
 			});
@@ -273,7 +383,7 @@ import { projects } from '../../lib/projects';
 
 		function filterByCategory(category: string, keepIndex = 0) {
 			visibleItems = allItems.filter((li) => {
-				const matches = li.querySelector<HTMLButtonElement>('.projects__name')?.dataset.category === category;
+				const matches = li.querySelector<HTMLAnchorElement>('.projects__name')?.dataset.category === category;
 				li.style.display = matches ? '' : 'none';
 				return matches;
 			});
@@ -302,9 +412,9 @@ import { projects } from '../../lib/projects';
 		// always resetting to the first DEV project.
 		const targetSlug = new URLSearchParams(window.location.search).get('project');
 		const targetItem = targetSlug
-			? allItems.find((li) => li.querySelector<HTMLButtonElement>('.projects__name')?.dataset.slug === targetSlug)
+			? allItems.find((li) => li.querySelector<HTMLAnchorElement>('.projects__name')?.dataset.slug === targetSlug)
 			: undefined;
-		const targetButton = targetItem?.querySelector<HTMLButtonElement>('.projects__name');
+		const targetButton = targetItem?.querySelector<HTMLAnchorElement>('.projects__name');
 
 		// Wait a frame so layout (fonts, TiltedCard images) has settled before
 		// measuring offsets for the first render.
@@ -312,7 +422,7 @@ import { projects } from '../../lib/projects';
 			if (targetButton?.dataset.category) {
 				const categoryItems = allItems.filter(
 					(li) =>
-						li.querySelector<HTMLButtonElement>('.projects__name')?.dataset.category === targetButton.dataset.category
+						li.querySelector<HTMLAnchorElement>('.projects__name')?.dataset.category === targetButton.dataset.category
 				);
 				const targetIndex = categoryItems.indexOf(targetItem!);
 				activateCategory(targetButton.dataset.category, targetIndex === -1 ? 0 : targetIndex);

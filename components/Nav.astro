@@ -56,11 +56,51 @@ import { ModeToggle } from './ModeToggle';
 		font-family: var(--font-sans);
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
+		transition: color 0.2s ease;
+	}
+
+	.nav-links a:hover {
+		color: var(--primary);
+	}
+
+	.nav__logo {
+		transition: color 0.2s ease;
+	}
+
+	.nav__logo:hover {
+		color: var(--primary);
 	}
 
 	.nav-actions {
 		display: flex;
 		align-items: center;
 		gap: 1rem;
+	}
+
+	/* Mobile: collapse into a single bottom tab bar instead of a top strip —
+	   the logo is dropped (its "home" link already lives in .nav-links) and
+	   the links + theme toggle are grouped together instead of being spread
+	   to the container's edges. */
+	@media (max-width: 480px) {
+		nav {
+			top: auto;
+			bottom: 0;
+			justify-content: center;
+			gap: 0.75rem;
+			padding: 0.85rem 1rem calc(1.75rem + env(safe-area-inset-bottom));
+		}
+
+		.nav__logo {
+			display: none;
+		}
+
+		.nav-links {
+			gap: 1.1rem;
+			padding: 0.5rem 1.1rem;
+		}
+
+		.nav-links a {
+			font-size: 0.75rem;
+		}
 	}
 </style>

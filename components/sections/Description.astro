@@ -45,6 +45,16 @@ import SocialLinks from '../SocialLinks.astro';
 		opacity: 0.85;
 		will-change: transform, opacity;
 	}
+
+	/* Forcing a full viewport height per section left huge empty gaps on
+	   mobile, where the content itself is much shorter than 100vh — let the
+	   section hug its content instead. */
+	@media (max-width: 768px) {
+		.description {
+			min-height: auto;
+			padding: 5rem 1.5rem;
+		}
+	}
 </style>
 
 <script>

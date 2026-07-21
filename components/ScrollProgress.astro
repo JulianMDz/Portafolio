@@ -1,0 +1,64 @@
+---
+---
+
+<div class="scroll-progress" aria-hidden="true">
+	<div class="scroll-progress__track">
+		<div class="scroll-progress__thumb"></div>
+	</div>
+</div>
+
+<style>
+	.scroll-progress {
+		position: fixed;
+		top: 0;
+		right: 0.85rem;
+		bottom: 0;
+		width: 2px;
+		padding: 1.5rem 0;
+		z-index: 40;
+		pointer-events: none;
+	}
+
+	.scroll-progress__track {
+		position: relative;
+		height: 100%;
+		background: color-mix(in oklch, var(--foreground) 12%, transparent);
+	}
+
+	.scroll-progress__thumb {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		background: var(--primary);
+		will-change: transform, height;
+	}
+
+	@media (max-width: 480px) {
+		.scroll-progress {
+			display: none;
+		}
+	}
+</style>
+
+<script>
+	const thumb = document.querySelector<HTMLDivElement>('.scroll-progress__thumb');
+	const track = document.querySelector<HTMLDivElement>('.scroll-progress__track');
+
+	function update() {
+		if (!thumb || !track) return;
+
+		const doc = document.documentElement;
+		const scrollable = doc.scrollHeight - doc.clientHeight;
+		const trackHeight = track.clientHeight;
+		const thumbHeight = Math.max(24, (doc.clientHeight / doc.scrollHeight) * trackHeight);
+		const progress = scrollable > 0 ? doc.scrollTop / scrollable : 0;
+
+		thumb.style.height = `${thumbHeight}px`;
+		thumb.style.transform = `translateY(${progress * (trackHeight - thumbHeight)}px)`;
+	}
+
+	update();
+	window.addEventListener('scroll', update, { passive: true });
+	window.addEventListener('resize', update);
+</script>

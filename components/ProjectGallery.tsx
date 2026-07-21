@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { MouseEvent } from 'react';
 import { gsap } from '../lib/gsap';
 import TiltedCard from './TiltedCard';
 
@@ -11,8 +12,16 @@ function clamp(value: number, min: number, max: number) {
 	return Math.min(max, Math.max(min, value));
 }
 
+// Matches the [slug].astro breakpoint where .project-detail__layout collapses
+// to a single column — below it there's no room for TiltedCard's fixed pixel
+// dimensions (640x480), which would otherwise overflow the viewport.
+const COMPACT_QUERY = '(max-width: 834px)';
+
 export default function ProjectGallery({ name, images }: ProjectGalleryProps) {
 	const [active, setActive] = useState(0);
+	const [isCompact, setIsCompact] = useState(
+		() => typeof window !== 'undefined' && window.matchMedia(COMPACT_QUERY).matches
+	);
 	const galleryRef = useRef<HTMLDivElement>(null);
 	const mainRef = useRef<HTMLDivElement>(null);
 	const activeRef = useRef(active);
@@ -20,23 +29,40 @@ export default function ProjectGallery({ name, images }: ProjectGalleryProps) {
 
 	activeRef.current = active;
 
+	useEffect(() => {
+		const mql = window.matchMedia(COMPACT_QUERY);
+		const update = () => setIsCompact(mql.matches);
+		update();
+		mql.addEventListener('change', update);
+		return () => mql.removeEventListener('change', update);
+	}, []);
+
 	function changeTo(next: number) {
 		next = clamp(next, 0, images.length - 1);
 		if (next === activeRef.current || lockedRef.current || !mainRef.current) return;
 
+		// The exit and entrance slide in opposite directions depending on
+		// whether we're moving forward or backward through the gallery, so
+		// the swap reads as a directional step instead of a flat crossfade.
+		const direction = next > activeRef.current ? 1 : -1;
+
 		lockedRef.current = true;
 		gsap.to(mainRef.current, {
 			opacity: 0,
+			y: -direction * 16,
+			scale: 0.97,
 			duration: 0.25,
 			ease: 'power2.in',
 			onComplete: () => {
 				setActive(next);
 				gsap.fromTo(
 					mainRef.current,
-					{ opacity: 0 },
+					{ opacity: 0, y: direction * 16, scale: 0.97 },
 					{
 						opacity: 1,
-						duration: 0.35,
+						y: 0,
+						scale: 1,
+						duration: 0.4,
 						ease: 'power2.out',
 						onComplete: () => {
 							lockedRef.current = false;
@@ -45,6 +71,11 @@ export default function ProjectGallery({ name, images }: ProjectGalleryProps) {
 				);
 			}
 		});
+	}
+
+	function handleThumbClick(e: MouseEvent<HTMLButtonElement>, i: number) {
+		gsap.fromTo(e.currentTarget, { scale: 0.85 }, { scale: 1, duration: 0.35, ease: 'back.out(3)' });
+		changeTo(i);
 	}
 
 	useEffect(() => {
@@ -78,7 +109,7 @@ export default function ProjectGallery({ name, images }: ProjectGalleryProps) {
 						key={img}
 						type="button"
 						className={`project-detail__thumb${i === active ? ' is-active' : ''}`}
-						onClick={() => changeTo(i)}
+						onClick={(e) => handleThumbClick(e, i)}
 					>
 						<img src={img} alt={`${name} preview ${i + 1}`} loading="lazy" />
 					</button>
@@ -90,10 +121,10 @@ export default function ProjectGallery({ name, images }: ProjectGalleryProps) {
 					imageSrc={images[active]}
 					altText={name}
 					captionText={name}
-					containerHeight="480px"
-					containerWidth="640px"
-					imageHeight="480px"
-					imageWidth="640px"
+					containerHeight={isCompact ? '66vw' : '480px'}
+					containerWidth={isCompact ? '88vw' : '640px'}
+					imageHeight={isCompact ? '66vw' : '480px'}
+					imageWidth={isCompact ? '88vw' : '640px'}
 					rotateAmplitude={10}
 					scaleOnHover={1.03}
 					showMobileWarning={false}

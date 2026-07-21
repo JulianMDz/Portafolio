@@ -5,6 +5,7 @@ import Grainient from '../../components/Grainient';
 import Preloader from '../../components/Preloader.astro';
 import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
+import ScrollProgress from '../../components/ScrollProgress.astro';
 import GradualBlur from '../../components/GradualBlur';
 
 interface Props {
@@ -92,6 +93,7 @@ const { title = 'Portafolio', showNav = true, showFooter = true } = Astro.props;
 
 		<Preloader />
 		{showNav && <Nav />}
+		<ScrollProgress />
 
 		<GradualBlur client:load preset="page-header" />
 		<GradualBlur client:load preset="page-footer" />
