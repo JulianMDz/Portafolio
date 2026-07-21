@@ -31,41 +31,6 @@ index.astro
 
 Sections scroll sequentially with GSAP-powered transitions. Interactive React components are mounted with `client:visible` (lazy hydration) for performance.
 
-## Key Components
-
-### Sections
-
-| Component     | File                                    | Description                       |
-|---------------|-----------------------------------------|-----------------------------------|
-| Hero          | `components/sections/Hero.astro`       | Landing screen with name & grain  |
-| Description   | `components/sections/Description.astro` | Bio with scrambled reveal effect  |
-| Projects      | `components/sections/Projects.astro`    | Filterable project cards + list   |
-| About         | `components/sections/About.astro`       | Skills, bio, and social profiles  |
-
-### Interactive (React)
-
-| Component          | File                             | Description                          |
-|--------------------|----------------------------------|--------------------------------------|
-| TiltedCard         | `components/TiltedCard.tsx`      | 3D perspective card on hover         |
-| TextType           | `components/TextType.tsx`        | Typewriter text animation            |
-| ScrambledText      | `components/ScrambledText.tsx`   | Text scrambles on reveal             |
-| VariableProximity  | `components/VariableProximity.tsx` | Text responds to cursor proximity  |
-| DarkVeil           | `components/DarkVeil.tsx`        | Transition overlay for dark mode     |
-| Grainient          | `components/Grainient.tsx`       | Animated grain + gradient texture    |
-| GradualBlur        | `components/GradualBlur.tsx`     | Progressive blur effect              |
-| ModeToggle         | `components/ModeToggle.tsx`      | Dark/light theme switcher            |
-| HeroSubtitle       | `components/HeroSubtitle.tsx`    | Animated subtitle in Hero            |
-| DescriptionText    | `components/DescriptionText.tsx`  | Bio text with proximity effect       |
-
-### Shared
-
-| Component    | File                             | Description                  |
-|--------------|----------------------------------|------------------------------|
-| Nav          | `components/Nav.astro`           | Sticky navigation bar       |
-| Footer       | `components/Footer.astro`        | Credits & social links      |
-| SocialLinks  | `components/SocialLinks.astro`   | Social icon row             |
-| Preloader    | `components/Preloader.astro`     | Initial loading screen       |
-
 ## Features
 
 - **GSAP scroll-driven animations** — sections animate into view on scroll
@@ -82,12 +47,9 @@ Sections scroll sequentially with GSAP-powered transitions. Interactive React co
 ```
 /
 ├── .astro/                   # Astro internal cache
-├── .agents/                  # AI agent skill definitions
-│   └── skills/
 ├── components/               # All components (Astro + React)
 │   ├── sections/             # Page section components
 │   └── ui/                  # shadcn/ui primitives (button, dropdown-menu)
-├── graphify-out/             # Auto-generated knowledge graph output
 ├── lib/                      # Utilities (gsap config, cn helper)
 ├── public/                   # Static assets (favicon)
 ├── src/
