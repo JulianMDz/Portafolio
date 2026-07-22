@@ -21,7 +21,8 @@ const { project } = Astro.props;
 		<div class="project-detail__layout">
 			<div class="project-detail__info">
 				<h1 class="project-detail__title">
-					{project.name} <span class="project-detail__year">{project.year}</span>
+					<span class="project-detail__name">{project.name}</span>
+					<span class="project-detail__year">{project.year}</span>
 				</h1>
 
 				<div class="project-detail__description">
@@ -246,7 +247,7 @@ const { project } = Astro.props;
 	// into its content.
 	const speed = prefersReducedMotion() ? 0.25 : 1;
 	const back = document.querySelector<HTMLAnchorElement>('.project-detail__back');
-	const title = document.querySelector<HTMLHeadingElement>('.project-detail__title');
+	const title = document.querySelector<HTMLSpanElement>('.project-detail__name');
 	const description = document.querySelector<HTMLDivElement>('.project-detail__description');
 	const techs = document.querySelector<HTMLUListElement>('.project-detail__techs');
 	const gallery = document.querySelector<HTMLDivElement>('.project-detail__gallery');
